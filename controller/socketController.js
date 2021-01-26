@@ -14,9 +14,6 @@ const {
 const ChatModel = require("../models/chatModel");
 
 exports.chat = (http) => {
-  // const wrap = (otpController.protect = (socket, next) =>
-  //   otpController.protect(socket.request, {}, next));
-
   app.use(express.static("public"));
   const io = require("socket.io")(http, {
     cors: {
