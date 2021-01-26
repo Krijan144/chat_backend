@@ -60,14 +60,14 @@ exports.chat = (http) => {
         console.log(msg);
         const user = getCurrentUser(socket.id);
         io.to(user.room).emit("message", formatMessage(user.username, msg));
-        // let chatMessage = new ChatModel({
-        //   message: msg,
-        //   sender: user.username,
-        //   time: user.time,
-        //   room: user.room,
-        // });
+        let chatMessage = new ChatModel({
+          message: msg,
+          sender: user.username,
+          time: user.time,
+          room: user.room,
+        });
 
-        //chatMessage.save();
+        chatMessage.save();
       });
       // //console.log(msg);
       // async (req, res) => {
