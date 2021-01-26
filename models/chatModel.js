@@ -9,7 +9,7 @@ const ChatSchema = new Schema(
     sender: {
       type: String,
     },
-    date: {
+    time: {
       type: String,
     },
     room: {

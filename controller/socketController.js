@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const formatMessage = require("../utils/messages");
+const otpController = require("../controller/otpController");
 const {
   userJoin,
   getCurrentUser,
@@ -13,11 +14,16 @@ const {
 const ChatModel = require("../models/chatModel");
 
 exports.chat = (http) => {
+  // const wrap = (otpController.protect = (socket, next) =>
+  //   otpController.protect(socket.request, {}, next));
+
   app.use(express.static("public"));
   const io = require("socket.io")(http, {
     cors: {
       origin: "http://localhost:3000",
       methods: ["GET", "POST"],
+      allowedHeaders: ["valid"],
+      credentials: true,
     },
   });
 
