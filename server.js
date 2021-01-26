@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const socketio = require("socket.io");
 const socketController = require("./controller/socketController");
+const otpController = require("./controller/otpController");
 const app = require("./app");
 const http = require("http").createServer(app);
 const cors = require("cors");

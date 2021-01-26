@@ -6,6 +6,7 @@ const http = require("http").createServer(app);
 // const http = require("http").createServer(app);
 // const io = socketio(http);
 const formatMessage = require("../utils/messages");
+const otpController = require("../controller/otpController");
 const {
   userJoin,
   getCurrentUser,
@@ -17,45 +18,57 @@ const mongoose = require("mongoose");
 const connect = require("../server");
 
 exports.chat = (http) => {
+  // const wrap = (otpController.protect = (socket, next) =>
+  //   otpController.protect(socket.request, {}, next));
+
   app.use(express.static("public"));
   const io = require("socket.io")(http, {
     cors: {
       origin: "http://localhost:3000",
       methods: ["GET", "POST"],
+      allowedHeaders: ["valid"],
+      credentials: true,
     },
   });
-
+  io.use((socket, next) => {
+    otpController.protect(next());
+  });
   const bot = "Chatbot";
 
   //run when client connects
   io.on("connection", (socket) => {
-    //console.log("sucessfully connected to socket");
-    // socket.on("joinroom", ({ username, room }) => {
-    // const user = userJoin(socket.id, username, room);
-    // socket.join(user.user.room);
-    //Welcome Message
-    socket.emit("message", formatMessage(bot, "Welcome to chatbot"));
-    //Show user has joined the chat
-    // socket.broadcast
-    //   .to(user.user.room)
-    //   .emit(
-    //     "message",
-    //     formatMessage(bot, `${user.user.username} has joined the chat`)
-    //   );
+    console.log("sucessfully connected to socket");
 
     socket.on("chatMessage", (msg) => {
-      //console.log(msg);
-      const user = getCurrentUser(socket.id);
-      io.to(user.room).emit("message", formatMessage(user.username, msg));
+      console.log(msg);
+    });
+    socket.on("joinroom", ({ username, room }) => {
+      const user = userJoin(socket.id, username, room);
+      console.log({ username, room });
+      socket.join(user.user.room);
+      //Welcome Message
+      socket.emit("message", formatMessage(bot, "Welcome to chatbot"));
+      // Show user has joined the chat
+      socket.broadcast
+        .to(user.user.room)
+        .emit(
+          "message",
+          formatMessage(bot, `${user.user.username} has joined the chat`)
+        );
 
-      let chatMessage = new ChatModel({
-        message: msg,
-        sender: user.username,
-        date: user.time,
-        room: user.room,
+      socket.on("chatMessage", (msg) => {
+        console.log(msg);
+        const user = getCurrentUser(socket.id);
+        io.to(user.room).emit("message", formatMessage(user.username, msg));
+        // let chatMessage = new ChatModel({
+        //   message: msg,
+        //   sender: user.username,
+        //   time: user.time,
+        //   room: user.room,
+        // });
+
+        //chatMessage.save();
       });
-      chatMessage.save();
-
       // //console.log(msg);
       // async (req, res) => {
       //   try {
@@ -71,14 +84,14 @@ exports.chat = (http) => {
       // };
     });
     //Show user has disconnected
-    // socket.on("disconnect", () => {
-    //   const user = userLeave(socket.id);
-    //   //console.log(user);
-    //   io.to(user.room).emit(
-    //     "message",
-    //     formatMessage(bot, `${user.username} has left the chat`)
-    //   );
-    // });
+    socket.on("disconnect", () => {
+      const user = userLeave(socket.id);
+      console.log(user);
+      io.to(user.room).emit(
+        "message",
+        formatMessage(bot, `${user.username} has left the chat`)
+      );
+    });
   });
 };
 

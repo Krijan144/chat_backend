@@ -12,5 +12,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/api/chat", require("./routes/chatRouter"));
+app.use("/api/otp", require("./routes/otprouter"));
 
 module.exports = app;
