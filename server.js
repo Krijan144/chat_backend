@@ -13,20 +13,20 @@ app.use(express.static("public"));
 
 dotenv.config();
 
-const uri = process.env.DATABASE_DEV;
-const connect = mongoose.connect(uri, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
+// const uri = process.env.DATABASE_DEV;
+// const connect = mongoose.connect(uri, {
+//   useNewUrlParser: true,
+//   useCreateIndex: true,
+//   useUnifiedTopology: true,
+// });
 socketController.chat(http);
 
-const connection = mongoose.connection;
-connection.once("open", () => {
-  console.log("!!! Database Successfully Connected !!!");
-});
+// const connection = mongoose.connection;
+// connection.once("open", () => {
+//   console.log("!!! Database Successfully Connected !!!");
+// });
 
 const PORT = 4000 || process.env.PORT;
 http.listen(PORT, () => `Server running on port ${PORT}`);
 
-module.exports = connect;
+// module.exports = connect;
